@@ -20,7 +20,7 @@ class ReLU:
         self.inputs = inputs
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        return np.maximum(0, inputs)
         # ==================================================
 
     def backward(self, d_outputs):
@@ -35,7 +35,7 @@ class ReLU:
             should be "d_out"
         """
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        return {"d_out": d_outputs * (self.inputs > 0)}
         # ==================================================
 
 
@@ -58,7 +58,7 @@ class Sigmoid:
         self.inputs = inputs
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        return 1 / (1 + np.exp(-inputs))
         # ==================================================
 
     def backward(self, d_outputs):
@@ -74,7 +74,8 @@ class Sigmoid:
         """
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        sig = 1 / (1 + np.exp(-self.inputs))
+        return {"d_out": d_outputs * sig * (1 - sig)}
         # ==================================================
 
 
@@ -96,7 +97,9 @@ class Softmax:
         self.inputs = inputs
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        # Shifting by max for numerical stability
+        exp_shifted = np.exp(inputs - np.max(inputs, axis=-1, keepdims=True))
+        return exp_shifted / np.sum(exp_shifted, axis=-1, keepdims=True)
         # ==================================================
 
     def backward(self, d_outputs):
@@ -112,5 +115,9 @@ class Softmax:
         """
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        softmax = self.forward(self.inputs)
+        dot = np.sum(d_outputs * softmax, axis=-1, keepdims=True)
+        d_inputs = softmax * (d_outputs - dot)
+
+        return {"d_out": d_inputs}
         # ==================================================

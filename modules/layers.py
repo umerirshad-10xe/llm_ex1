@@ -32,7 +32,25 @@ class ConvolutionLayer:
         self.inputs = inputs
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        batch_size, in_channels, H, W = inputs.shape
+        k = self.kernel_size
+        s = self.stride
+
+        out_H = (H - k) // s + 1
+        out_W = (W - k) // s + 1
+
+        outputs = np.zeros((batch_size, self.out_channels, out_H, out_W), dtype=np.float32)
+
+        for b in range(batch_size):
+            for oc in range(self.out_channels):
+                for i in range(out_H):
+                    for j in range(out_W):
+                        h_start = i * s
+                        w_start = j * s
+                        region = inputs[b, :, h_start:h_start+k, w_start:w_start+k]
+                        outputs[b, oc, i, j] = np.sum(region * self.weights[oc]) + self.bias[oc]
+
+        return outputs
         # ==================================================
 
     def backward(self, d_outputs):
@@ -51,20 +69,51 @@ class ConvolutionLayer:
 
         """
 
-        self.inputs = None
         if self.inputs is None:
             raise NotImplementedError(
                 "Need to call forward function before backward function"
             )
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        inputs = self.inputs
+        batch_size, in_channels, H, W = inputs.shape
+        k = self.kernel_size
+        s = self.stride
+
+        _, _, out_H, out_W = d_outputs.shape
+
+        d_weights = np.zeros_like(self.weights)
+        d_bias = np.zeros_like(self.bias)
+        d_inputs = np.zeros_like(inputs)
+
+        for b in range(batch_size):
+            for oc in range(self.out_channels):
+                d_bias[oc] += np.sum(d_outputs[b, oc])
+
+                for i in range(out_H):
+                    for j in range(out_W):
+                        h_start = i * s
+                        w_start = j * s
+
+                        region = inputs[b, :, h_start:h_start+k, w_start:w_start+k]
+
+                        d_weights[oc] += d_outputs[b, oc, i, j] * region
+                        d_inputs[b, :, h_start:h_start+k, w_start:w_start+k] += (
+                            d_outputs[b, oc, i, j] * self.weights[oc]
+                        )
+
+        return {
+            "d_weights": d_weights,
+            "d_bias": d_bias,
+            "d_out": d_inputs,
+        }
         # ==================================================
 
     def update(self, d_weights, d_bias, learning_rate):
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        self.weights -= learning_rate * d_weights
+        self.bias -= learning_rate * d_bias
         # ==================================================
 
 
@@ -104,7 +153,8 @@ class LinearLayer:
         """
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        self.inputs = inputs
+        return inputs @ self.weights.T + self.bias
         # ==================================================
 
     def backward(self, d_outputs):
@@ -125,11 +175,22 @@ class LinearLayer:
             raise NotImplementedError("Need to call forward function before backward function")
         
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        inputs = self.inputs
+
+        d_weights = d_outputs.T @ inputs
+        d_bias = np.sum(d_outputs, axis=0)
+        d_inputs = d_outputs @ self.weights
+
+        return {
+            "d_weights": d_weights,
+            "d_bias": d_bias,
+            "d_out": d_inputs,
+        }
         # ==================================================
 
     def update(self, d_weights, d_bias, learning_rate):
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        self.weights -= learning_rate * d_weights
+        self.bias -= learning_rate * d_bias
         # ==================================================

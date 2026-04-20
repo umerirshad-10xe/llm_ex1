@@ -22,7 +22,9 @@ class CrossEntropy:
         self.targets = targets
 
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        inputs_clipped = np.clip(inputs, self.eps, 1.0 - self.eps)
+        loss = -np.sum(targets * np.log(inputs_clipped)) / inputs.shape[0]
+        return loss
         # ==================================================
 
     def backward(self):
@@ -38,5 +40,9 @@ class CrossEntropy:
         """
         
         # ================ Insert Code Here ================
-        raise NotImplementedError
+        inputs_clipped = np.clip(self.inputs, self.eps, 1.0 - self.eps)
+        d_out = (self.targets / inputs_clipped) / self.inputs.shape[0] * -1
+
+        return {"d_out": d_out}
+
         # ==================================================
