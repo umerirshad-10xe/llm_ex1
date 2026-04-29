@@ -1,3 +1,26 @@
+# Author : Umer Irshad
+# Date : 2026-04-21
+# Module : LLM
+# Section : Introduction
+# Task Name : Coding Exercise Part 1
+# Part : Layers
+# Description : 
+
+# This file contains the following Layers of a deep neural network: 
+#   1. Convolution Layer
+#   2. Liner Layer
+
+# Convolution Layer takes in the input and output channels. The provided
+# kernel size is a single number which is translated into a square shaped
+# filter to be applied. The stride parameter decides the stride decided 
+# vertically and horizontally to perform the convolution operation.
+
+# Liner Layer is by definition a fully connected layer with parameters of 
+# input features and output features. The weight matrix of such a layer contains
+# output_features * input_features weights.
+
+# The weights for each layer is being initialized using kaiming intilization. 
+
 import numpy as np
 
 
@@ -8,10 +31,14 @@ class ConvolutionLayer:
         self.kernel_size = kernel_size
         self.stride = stride
 
-        self.weights = np.random.rand(
+        fan_in = in_channels * kernel_size * kernel_size
+        std = np.sqrt(2.0 / fan_in)
+
+        self.weights = np.random.randn(
             out_channels, in_channels, kernel_size, kernel_size
-        ).astype(np.float32)
-        self.bias = np.random.rand(out_channels).astype(np.float32)
+        ).astype(np.float32) * std
+
+        self.bias = np.zeros(out_channels, dtype=np.float32)
 
         self.inputs = None
         self.has_weights = True
@@ -135,8 +162,11 @@ class LinearLayer:
         self.in_features = in_features
         self.out_features = out_features
 
-        self.weights = np.random.rand(out_features, in_features).astype(np.float32)
-        self.bias = np.random.rand(out_features).astype(np.float32)
+        fan_in = in_features
+        std = np.sqrt(2.0 / fan_in)
+
+        self.weights = np.random.randn(out_features, in_features).astype(np.float32) * std
+        self.bias = np.zeros(out_features, dtype=np.float32)
 
         self.inputs = None
         self.has_weights = True

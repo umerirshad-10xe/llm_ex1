@@ -1,3 +1,20 @@
+# Author : Umer Irshad
+# Date : 2026-04-21
+# Module : LLM
+# Section : Introduction
+# Task Name : Coding Exercise Part 1
+# Part : Activations
+# Description : 
+
+# This file contains the 3 activations being used in the NNs:
+#   1. ReLU (Rectified Linear Unit)
+#   2. Sigmoid
+#   3. Softmax
+# Forward and backward pass for each layer is implemented.
+# For softmax, the derivative is calcualted by reducing 
+# the expressions obtained from the jacobian matrix multiplication
+
+
 import numpy as np
 
 

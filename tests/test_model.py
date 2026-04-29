@@ -22,7 +22,7 @@ class TestAccuracy:
 
         model = Model(layer_list, CrossEntropy())
 
-        model.train(x_train, y_train, 25, 0.01, 32)
+        model.train(x_train, y_train, 50, 0.1, 32)
 
         predictions = model.predict(x_test)
         accuracy = compute_accuracy(predictions, y_test)

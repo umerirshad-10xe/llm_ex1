@@ -1,3 +1,16 @@
+# Author : Umer Irshad
+# Date : 2026-04-21
+# Module : LLM
+# Section : Introduction
+# Task Name : Coding Exercise Part 1
+# Part : Loss
+# Description : 
+
+# This file contains the Cross Entropy Loss forward and backward pass:
+# Epsilon is used to maintain numerical stability (keeping the inputs in a
+# good range of 0-1) so that the outputs dont explode for very big exponentials
+
+
 import numpy as np
 
 
